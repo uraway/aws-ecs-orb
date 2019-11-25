@@ -15,20 +15,20 @@ examples:
       version: 2.1
 
       orbs:
-        aws-ecr: circleci/aws-ecr@0.0.4
+        aws-ecr: circleci/aws-ecr@6.5.0
         aws-ecs: circleci/aws-ecs@0.0.10
 
       workflows:
         build-and-deploy:
           jobs:
-            - aws-ecr/build_and_push_image:
-                account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+            - aws-ecr/build-and-push-image:
+                account-url: AWS_ECR_ACCOUNT_URL
                 repo: "${MY_APP_PREFIX}"
-                region: "${AWS_REGION}"
+                region: AWS_REGION
                 tag: "${CIRCLE_SHA1}"
             - aws-ecs/deploy-service-update:
                 requires:
-                  - aws-ecr/build_and_push_image
+                  - aws-ecr/build-and-push-image
                 family: "${MY_APP_PREFIX}-service"
                 cluster-name: "${MY_APP_PREFIX}-cluster"
                 container-image-name-updates: "container=${MY_APP_PREFIX}-service,tag=${CIRCLE_SHA1}"
@@ -229,7 +229,7 @@ jobs:
         default: ""
       container-env-var-updates:
         description: |
-          Use this to update or set the values of environment variables that will be defined for the containers. 
+          Use this to update or set the values of environment variables that will be defined for the containers.
           (Existing environment variables not included in this parameter will not be removed)
           Expected format: container=<container-name>,name=<env-var-name>,value=<env-var-value>,container=...,name=...,value=...,
           Values should not contain commas.
@@ -326,7 +326,7 @@ jobs:
         default: ""
       container-env-var-updates:
         description: |
-          Use this to update or set the values of environment variables that will be defined for the containers. 
+          Use this to update or set the values of environment variables that will be defined for the containers.
           (Existing environment variables not included in this parameter will not be removed)
           Expected format: container=<container-name>,name=<env-var-name>,value=<env-var-value>,container=...,name=...,value=...,
           Values should not contain commas.
@@ -611,7 +611,7 @@ commands:
         default: ""
       container-env-var-updates:
         description: |
-          Use this to update or set the values of environment variables that will be defined for the containers. 
+          Use this to update or set the values of environment variables that will be defined for the containers.
           (Existing environment variables not included in this parameter will not be removed)
           Expected format: container=<container-name>,name=<env-var-name>,value=<env-var-value>,container=...,name=...,value=...,
           Values should not contain commas.
@@ -635,7 +635,7 @@ commands:
 
             # Prepare container definitions
             CONTAINER_DEFS=$(python $UPDATE_CONTAINER_DEFS_SCRIPT_FILE "$PREVIOUS_TASK_DEFINITION" "$CONTAINER_IMAGE_NAME_UPDATES" "$CONTAINER_ENV_VAR_UPDATES")
-            
+
             # Escape single quotes from environment variables for BASH_ENV
             CLEANED_CONTAINER_DEFS=$(echo $CONTAINER_DEFS | sed -E "s:':'\\\'':g")
 
@@ -787,7 +787,7 @@ commands:
         default: ""
       container-env-var-updates:
         description: |
-          Use this to update or set the values of environment variables that will be defined for the containers. 
+          Use this to update or set the values of environment variables that will be defined for the containers.
           (Existing environment variables not included in this parameter will not be removed)
           Expected format: container=<container-name>,name=<env-var-name>,value=<env-var-value>,container=...,name=...,value=...,
           Values should not contain commas.
